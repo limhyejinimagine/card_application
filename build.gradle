@@ -24,6 +24,20 @@ repositories {
 }
 
 dependencies {
+	// AWS 관련
+	implementation 'software.amazon.awssdk:s3:2.25.22'
+	implementation 'software.amazon.awssdk:auth:2.25.22'
+
+
+	// Redis 관련
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.apache.commons:commons-pool2'
+
+
+	// Kaka 관련
+	implementation 'org.springframework.kafka:spring-kafka'
+
+
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'

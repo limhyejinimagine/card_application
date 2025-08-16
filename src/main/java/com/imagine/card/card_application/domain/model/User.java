@@ -1,32 +1,42 @@
 package com.imagine.card.card_application.domain.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-@Getter
-@Setter
+/*      사용자 기본정보    */
+
 @Entity
-@Table(name = "user")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Table(name = "user",
+        indexes = {
+                @Index(name = "idx_user_phone", columnList = "phone"),
+                @Index(name = "idx_user_ci", columnList = "ci")
+        })
 public class User {
-    @Id     // PK키
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 증가 설정
-    private Long user_id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Long id;
 
     private String name;
 
     @Column(unique = true)
     private String phone;
 
-    private LocalDate birth_Date;
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
 
     @Column(unique = true)
     private String ci;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    // Getters and Setters 생략
+    // ERD: User 1:N CardApplication
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<CardApplication> applications = new ArrayList<>();
 }

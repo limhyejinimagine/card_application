@@ -1,3 +1,4 @@
+
 spring:
   messages:
     basename: ValidationMessages
@@ -8,10 +9,17 @@ spring:
     baseline-on-migrate: true
 
   datasource:
-    url: jdbc:mysql://localhost:3306/card_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: card_user
-    password: card_pass
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    master:
+      url: jdbc:mysql://localhost:3306/card_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      username: card_user
+      password: card_pass
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    slave:
+      url: jdbc:mysql://localhost:3307/card_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      username: card_user
+      password: card_pass
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
   data:
     redis:
       host: localhost
@@ -33,6 +41,7 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
   # (선택) 시간대 통일

@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  mysql-master:
+    image: mysql:8.0
+    container_name: mysql-master
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: card_pass
+      MYSQL_DATABASE: card_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./master_data:/var/lib/mysql    # Master DB 데이터 파일
+      - ./master_conf:/etc/mysql/conf.d  # Master 전용 설정 파일(my.cnf)
+
+  mysql-slave:
+    image: mysql:8.0
+    container_name: mysql-slave
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: card_pass
+      MYSQL_DATABASE: card_db
+    ports:
+      - "3307:3306"
+    depends_on:
+      - mysql-master
+    volumes:
+      - ./slave_data:/var/lib/mysql          # Slave DB 데이터 파일
+      - ./slave_conf:/etc/mysql/conf.d      # Slave 전용 설정 파일(my.cnf)

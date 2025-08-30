@@ -1,5 +1,0 @@
-[mysqld]
-server-id=2
-relay-log=relay-log-bin
-log-bin=mysql-bin
-binlog-do-db=card_db

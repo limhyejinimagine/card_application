@@ -10,8 +10,8 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./master_data:/var/lib/mysql    # Master DB 데이터 파일
-      - ./master_conf:/etc/mysql/conf.d  # Master 전용 설정 파일(my.cnf)
+      - master_data:/var/lib/mysql          # 네임드 볼륨 (호스트 경로 X)
+      - ./master_conf:/etc/mysql/conf.d     # Master 전용 설정 파일
 
   mysql-slave:
     image: mysql:8.0
@@ -25,5 +25,9 @@ services:
     depends_on:
       - mysql-master
     volumes:
-      - ./slave_data:/var/lib/mysql          # Slave DB 데이터 파일
-      - ./slave_conf:/etc/mysql/conf.d      # Slave 전용 설정 파일(my.cnf)
+      - slave_data:/var/lib/mysql           # 네임드 볼륨
+      - ./slave_conf:/etc/mysql/conf.d      # Slave 전용 설정 파일
+
+volumes:
+  master_data:
+  slave_data:

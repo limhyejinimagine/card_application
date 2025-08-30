@@ -6,12 +6,14 @@ import com.imagine.card.card_application.application.dto.UpdateCardTypeRequest;
 import com.imagine.card.card_application.application.service.CardTypeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 /* 카드 상품관리 -- 관리자 전용 컨트롤러 */
+@Slf4j
 @RestController
 @RequestMapping("/card-types")
 @RequiredArgsConstructor
@@ -33,6 +35,7 @@ public class CardTypeController {
      */
     @GetMapping
     public List<CardTypeResponse> getCardTypeList() {
+        log.info("CALL getCardTypeList()");
         return cardTypeService.getCardTypeList();
     }
 

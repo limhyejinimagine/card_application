@@ -1,5 +1,25 @@
-
 spring:
+  datasource:
+    master:
+      jdbc-url: jdbc:mysql://localhost:3306/card_db?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+      username: card_user
+      password: card_pass
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    slave:
+      jdbc-url: jdbc:mysql://localhost:3307/card_db?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+      username: card_user
+      password: card_pass
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+
   messages:
     basename: ValidationMessages
     encoding: UTF-8
@@ -8,22 +28,10 @@ spring:
     enabled: true
     baseline-on-migrate: true
 
-  datasource:
-    master:
-      url: jdbc:mysql://localhost:3306/card_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-      username: card_user
-      password: card_pass
-      driver-class-name: com.mysql.cj.jdbc.Driver
-    slave:
-      url: jdbc:mysql://localhost:3307/card_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-      username: card_user
-      password: card_pass
-      driver-class-name: com.mysql.cj.jdbc.Driver
-
   data:
     redis:
       host: localhost
-      port: 6379    # Docker 포트 6379로 열었음
+      port: 6379
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -35,22 +43,12 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
-  jpa:
-    hibernate:
-      ddl-auto: none  # create(실행 시 매번 테이블 새로 생성) / update(테이블 자동 갱신  / validate(테이블 존재 여부만 검사)
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
-
-  # (선택) 시간대 통일
   jackson:
     time-zone: Asia/Seoul
 
 aws:
   s3:
-    bucket: card-application-storage  # 버킷 이름
+    bucket: card-application-storage
     region: ap-northeast-2
 
 logging:

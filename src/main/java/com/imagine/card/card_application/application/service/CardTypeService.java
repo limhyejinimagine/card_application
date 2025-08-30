@@ -7,12 +7,15 @@ import com.imagine.card.card_application.application.service.exception.DomainExc
 import com.imagine.card.card_application.domain.model.CardType;
 import com.imagine.card.card_application.domain.repository.CardTypeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
 /* 카드 상품관리 -- 관리자 전용 서비스 */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CardTypeService {
@@ -55,6 +58,11 @@ public class CardTypeService {
      */
     @Transactional(readOnly = true)
     public List<CardTypeResponse> getCardTypeList() {
+        log.info(">>> Transaction active={}, readOnly={}",
+                TransactionSynchronizationManager.isActualTransactionActive(),
+                TransactionSynchronizationManager.isCurrentTransactionReadOnly());
+
+
         return cardTypeRepository.findAll().stream()
                 .map(cardType -> new CardTypeResponse(cardType.getId(), cardType.getName(), cardType.getDescription(), cardType.getIsActive()))
                 .toList();

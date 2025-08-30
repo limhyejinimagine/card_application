@@ -7,7 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 // Kafka 테스트 -- consumer
-@Service
+//@Service
 @RequiredArgsConstructor
 public class KafkaConsumerService {
 

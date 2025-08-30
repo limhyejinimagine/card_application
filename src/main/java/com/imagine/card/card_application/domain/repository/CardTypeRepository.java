@@ -6,6 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface CardTypeRepository extends JpaRepository<CardType,Long> {
-    Optional<CardType> findByIdAndIsActiveTrue(Long id);
+    
+    // 카드타입 id 로 조회
+    Optional<CardType> findById(Long id);
+
+    // 카드명 조회
+    boolean existsByName(String name);
+    
+    
 
 }

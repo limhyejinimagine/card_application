@@ -9,7 +9,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
 // S3Client 설정 클래스
-@Configuration
+//@Configuration
 public class S3Config {
 
     @Value("${aws.s3.region}")

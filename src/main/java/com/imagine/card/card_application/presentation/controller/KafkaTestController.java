@@ -6,7 +6,7 @@ import com.imagine.card.card_application.infrastructure.kafka.KafkaProducerServi
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+//@RestController
 @RequiredArgsConstructor
 @RequestMapping("/kafka")
 public class KafkaTestController {

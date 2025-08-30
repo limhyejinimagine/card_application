@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 // S3 업로드 서비스
-@Service
+//@Service
 @RequiredArgsConstructor
 public class S3UploadService {
 

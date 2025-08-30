@@ -35,7 +35,6 @@ public class CardApplicationService {
      * - 신청 저장 + 상태이력 기록
      */
 
-
     @Transactional
     public ApplyCardResponse apply(ApplyCardRequest dto) {
 
@@ -47,8 +46,12 @@ public class CardApplicationService {
         // 2. 카드타입 활성 체크 + 유저/카드타입 로드
         var user = userRepository.findById(dto.userId())
                 .orElseThrow(() -> new DomainException("사용자를 찾을 수 없습니다."));
-        var cardType = cardTypeRepository.findByIdAndIsActiveTrue(dto.cardTypeId())
-                .orElseThrow(() -> new DomainException("비활성화된 카드 타입이거나 존재하지 않습니다."));
+        var cardType = cardTypeRepository.findById(dto.cardTypeId())
+                .orElseThrow(() -> new DomainException("존재하지 않는 카드 타입입니다."));
+
+        if (!cardType.getIsActive()) {
+            throw new DomainException("비활성화된 카드 타입입니다.");
+        }
 
         // 3. 신청 저장
         var now = LocalDateTime.now();

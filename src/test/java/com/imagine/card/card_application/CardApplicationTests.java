@@ -30,10 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@EnableAutoConfiguration(exclude = {
-		RedisAutoConfiguration.class,
-		KafkaAutoConfiguration.class
-})
 class CardApplicationTests {
 
 	@Autowired
@@ -61,7 +57,8 @@ class CardApplicationTests {
 	void setUp() {
 		var user = userRepository.save(User.builder()
 				.name("홍길동").phone("010-1111-2222")
-				.birthDate(LocalDate.parse("CI-123"))
+				.birthDate(LocalDate.of(1996, 7, 11))
+				.ci("CI-123")
 				.createdAt(LocalDateTime.now())
 				.build());
 		userId = user.getId();

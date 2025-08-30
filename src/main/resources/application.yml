@@ -1,4 +1,8 @@
 spring:
+  messages:
+    basename: ValidationMessages
+    encoding: UTF-8
+
   flyway:
     enabled: true
     baseline-on-migrate: true

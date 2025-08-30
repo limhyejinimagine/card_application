@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-@RestController
+//@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/s3")
 public class S3UploadController {

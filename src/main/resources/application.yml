@@ -46,11 +46,6 @@ spring:
   jackson:
     time-zone: Asia/Seoul
 
-aws:
-  s3:
-    bucket: card-application-storage
-    region: ap-northeast-2
-
 logging:
   level:
     org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: DEBUG

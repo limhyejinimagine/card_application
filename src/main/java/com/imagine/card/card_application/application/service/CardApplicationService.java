@@ -3,13 +3,14 @@ package com.imagine.card.card_application.application.service;
 
 import com.imagine.card.card_application.application.dto.ApplyCardRequest;
 import com.imagine.card.card_application.application.dto.ApplyCardResponse;
-import com.imagine.card.card_application.application.service.exception.DomainException;
+import com.imagine.card.card_application.application.service.validator.CardApplicationValidator;
+import com.imagine.card.card_application.application.service.validator.ValidationResult;
 import com.imagine.card.card_application.domain.model.ApplicationStatusHistory;
 import com.imagine.card.card_application.domain.model.CardApplication;
+import com.imagine.card.card_application.domain.model.CardType;
+import com.imagine.card.card_application.domain.model.User;
 import com.imagine.card.card_application.domain.repository.ApplicationStatusHistoryRepository;
 import com.imagine.card.card_application.domain.repository.CardApplicationRepository;
-import com.imagine.card.card_application.domain.repository.CardTypeRepository;
-import com.imagine.card.card_application.domain.repository.UserRepository;
 import com.imagine.card.card_application.infrastructure.kafka.CardApplicationEventPublisher;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,36 +23,29 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class CardApplicationService {
 
-    private final UserRepository userRepository;
-    private final CardTypeRepository cardTypeRepository;
+    private final CardApplicationValidator validator;
     private final CardApplicationRepository applicationRepository;
     private final ApplicationStatusHistoryRepository historyRepository;
     private final CardApplicationEventPublisher eventProducer;
 
     /**
      * 카드 신청 메인 유스케이스
-     * - Redis 분산락으로 중복 클릭/요청 방지
-     * - 기초 검증: 카드종류 활성/중복신청 체크
-     * - 신청 저장 + 상태이력 기록
+     *  - 기초 검증: 카드종류 활성/중복신청 체크
+     * -  Redis 분산락으로 중복 클릭/요청 방지
+     * -  신청 저장 + 상태이력 기록
+     * -  kafka 이벤트 발행
      */
 
     @Transactional
     public ApplyCardResponse apply(ApplyCardRequest dto) {
 
-        // 1. 중복신청 체크
-        if (applicationRepository.existsByUser_IdAndCardType_Id(dto.userId(), dto.cardTypeId())) {
-            throw new DomainException("이미 신청된 카드 타입입니다.");
-        }
+        // 1. 기초검증
+        ValidationResult result = validator.validateAll(dto.userId(), dto.cardTypeId());
+        User user = result.getUser();
+        CardType cardType = result.getCardType();
 
-        // 2. 카드타입 활성 체크 + 유저/카드타입 로드
-        var user = userRepository.findById(dto.userId())
-                .orElseThrow(() -> new DomainException("사용자를 찾을 수 없습니다."));
-        var cardType = cardTypeRepository.findById(dto.cardTypeId())
-                .orElseThrow(() -> new DomainException("존재하지 않는 카드 타입입니다."));
-
-        if (!cardType.getIsActive()) {
-            throw new DomainException("비활성화된 카드 타입입니다.");
-        }
+        // TODO
+        // 2. Redis 분산락으로 중복 클릭/ 요청 방지
 
         // 3. 신청 저장
         var now = LocalDateTime.now();
@@ -63,7 +57,7 @@ public class CardApplicationService {
                 .build();
         applicationRepository.save(app);
 
-        // 4. 상태 이력
+        // 4. 상태 이력 저장
         var history = ApplicationStatusHistory.builder()
                 .application(app)
                 .status(CardApplication.ApplicationStatus.REQUESTED)
@@ -72,9 +66,11 @@ public class CardApplicationService {
                 .build();
         historyRepository.save(history);
 
-        // 5. 이벤트 (지금은 일단 No-Op)
+        // TODO ::: (지금은 일단 No-Op)
+        // 5. kafka 이벤트
         eventProducer.publishCardApplied(app.getId(), user.getId(), cardType.getId());
 
         return new ApplyCardResponse(app.getId());
     }
+
 }

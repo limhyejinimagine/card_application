@@ -3,7 +3,7 @@ package com.imagine.card.card_application.application.service;
 import com.imagine.card.card_application.application.dto.CardTypeResponse;
 import com.imagine.card.card_application.application.dto.CreateCardTypeRequest;
 import com.imagine.card.card_application.application.dto.UpdateCardTypeRequest;
-import com.imagine.card.card_application.application.service.exception.DomainException;
+import com.imagine.card.card_application.application.service.validator.CardTypeValidator;
 import com.imagine.card.card_application.domain.model.CardType;
 import com.imagine.card.card_application.domain.repository.CardTypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.xml.validation.Validator;
 import java.util.List;
 
 /* 카드 상품관리 -- 관리자 전용 서비스 */
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CardTypeService {
 
+    private final CardTypeValidator validator;
     private final CardTypeRepository cardTypeRepository;
 
     /**
@@ -27,11 +29,9 @@ public class CardTypeService {
      */
     @Transactional
     public CardTypeResponse registCardType (CreateCardTypeRequest dto) {
-        
+
         // 1. 카드명 중복체크
-        if (cardTypeRepository.existsByName(dto.name())) {
-            throw new DomainException("이미 존재하는 카드 상품명입니다.");
-        }
+        validator.checkCardNameForCreate(dto.name());
 
         // 2. 없으면 엔티티 생성
         var cardType = CardType.builder()
@@ -52,7 +52,6 @@ public class CardTypeService {
 
     }
 
-   // TODO : MASTER-SLAVE 분리>> Spring + RoutingDataSource로 구현
     /**
      * 카드 상품 목록 조회
      */
@@ -73,8 +72,7 @@ public class CardTypeService {
      */
     @Transactional(readOnly = true)
     public CardTypeResponse getCardTypeOne(Long id) {
-        CardType cardType = cardTypeRepository.findById(id)
-                        .orElseThrow(() -> new IllegalArgumentException("카드 타입 없음"));
+        CardType cardType = validator.checkCardType(id);
         return CardTypeResponse.from(cardType);
     }
 
@@ -85,18 +83,12 @@ public class CardTypeService {
     public void updateCardType(Long id, UpdateCardTypeRequest req) {
 
         // 1. 수정할 대상 엔티티 조회
-        CardType cardType = cardTypeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("카드 타입 없음"));
+        CardType cardType = validator.checkCardType(id);
 
         // 2. 이름 중복 체크
-        if ( req.name() != null
-              &&  !cardType.getName().equals(req.name())
-        && cardTypeRepository.existsByName(req.name()))
-         {
-            throw new IllegalArgumentException("이미 존재하는 카드명입니다.");
-        }
+        validator.checkCardNameForUpdate(cardType,req.name());
 
-        // 3. 수정`
+        // 3. 수정
         if (req.name() != null) {
             cardType.setName(req.name());
         }

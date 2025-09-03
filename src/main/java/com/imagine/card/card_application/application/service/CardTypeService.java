@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import javax.xml.validation.Validator;
 import java.util.List;
 
 /* 카드 상품관리 -- 관리자 전용 서비스 */
@@ -82,6 +81,9 @@ public class CardTypeService {
     @Transactional
     public void updateCardType(Long id, UpdateCardTypeRequest req) {
 
+        log.info("DTO={}", req);
+        log.info("req.isActive={}", req.isActive());
+
         // 1. 수정할 대상 엔티티 조회
         CardType cardType = validator.checkCardType(id);
 
@@ -99,6 +101,7 @@ public class CardTypeService {
             cardType.setIsActive(req.isActive());
         }
     }
+
 
 
 }

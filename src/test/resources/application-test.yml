@@ -1,38 +1,19 @@
-spring:
-  main:
-    allow-bean-definition-overriding: true
 
+spring:
   datasource:
-    url: jdbc:h2:mem:carddb;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:mysql://localhost:3306/card_db_test?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: card_user
+    password: card_pass
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create-drop   # 테스트는 스키마 매번 새로
+      ddl-auto: none
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
-        show_sql: false
-
+        show_sql: true
   flyway:
-    enabled: false            # 테스트에선 마이그레이션 비활성화(원하면 true로)
+    enabled: false
 
-  # 외부 시스템 값들 '자리채우기' (빈이 값 없어서 죽는 것 방지)
-  kafka:
-    listener:
-      auto-startup: false
-    bootstrap-servers: 127.0.0.1:9092
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
-# 혹시 S3 같은 커스텀 설정을 @Value(...)로 읽으면 더미값 제공
-aws:
-  s3:
-
-
-    accessKey: dummy
-    secretKey: dummy

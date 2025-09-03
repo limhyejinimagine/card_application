@@ -8,7 +8,7 @@ import com.imagine.card.card_application.application.service.validator.Validatio
 import com.imagine.card.card_application.domain.model.*;
 import com.imagine.card.card_application.domain.repository.ApplicationStatusHistoryRepository;
 import com.imagine.card.card_application.domain.repository.CardApplicationRepository;
-import com.imagine.card.card_application.infrastructure.kafka.CardApplicationEventPublisher;
+
 import com.imagine.card.card_application.infrastructure.redisLock.RedisLockManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +64,8 @@ public class CardApplicationService {
 
             // TODO ::: (지금은 일단 No-Op)
             // 5. kafka 이벤트
-            eventProducer.publishCardApplied(app.getId(), user.getId(), cardType.getId());
+
+
             return new ApplyCardResponse(app.getId());
         }catch (Exception e) {
             throw new RuntimeException("DB 오류 발생", e);

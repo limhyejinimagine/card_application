@@ -1,9 +1,6 @@
 package com.imagine.card.card_application.application.service;
 
-import com.imagine.card.card_application.event.CardApplicationRequestedEvent;
-import com.imagine.card.card_application.event.CardApplicationStatusChangedEvent;
-import com.imagine.card.card_application.event.CardIssuedEvent;
-import com.imagine.card.card_application.event.ValidationFailedEvent;
+import com.imagine.card.card_application.event.*;
 
 public interface CardApplicationEventPublisher {
     void publishValidationFailed(ValidationFailedEvent event);

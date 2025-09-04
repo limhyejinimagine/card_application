@@ -1,7 +1,7 @@
 -- USERS
-CREATE TABLE IF NOT EXISTS user (
-                                    user_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                                    name VARCHAR(255),
+CREATE TABLE IF NOT EXISTS users (
+                                     user_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                                     name VARCHAR(255),
     phone VARCHAR(255) UNIQUE,
     birth_date DATE,
     ci VARCHAR(255) UNIQUE,
@@ -10,11 +10,12 @@ CREATE TABLE IF NOT EXISTS user (
 
 -- CARD TYPE
 CREATE TABLE IF NOT EXISTS card_type (
-                                         card_type_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                                         name VARCHAR(100) NOT NULL,
-    description TEXT,
-    is_active TINYINT(1) DEFAULT 1,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+     card_type_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+     name VARCHAR(100) NOT NULL,
+        description TEXT,
+        is_active TINYINT(1) DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME(6) DEFAULT NULL
     );
 
 -- CARD APPLICATION
@@ -28,7 +29,7 @@ CREATE TABLE IF NOT EXISTS card_application (
     issued_at DATETIME DEFAULT NULL,
     rejection_reason TEXT,
     CONSTRAINT uk_user_cardtype UNIQUE (user_id, card_type_id),
-    CONSTRAINT fk_app_user FOREIGN KEY (user_id) REFERENCES user(user_id),
+    CONSTRAINT fk_app_user FOREIGN KEY (user_id) REFERENCES users(user_id),
     CONSTRAINT fk_app_card_type FOREIGN KEY (card_type_id) REFERENCES card_type(card_type_id)
     );
 
@@ -55,6 +56,7 @@ CREATE TABLE IF NOT EXISTS application_status_history (
 
 -- AUTH LOG
 CREATE TABLE IF NOT EXISTS auth_log (
+
                                         auth_id BIGINT PRIMARY KEY AUTO_INCREMENT,
                                         user_id BIGINT NULL,
                                         ci VARCHAR(255) NULL,
@@ -65,5 +67,4 @@ CREATE TABLE IF NOT EXISTS auth_log (
     completed_at DATETIME NULL,
     failure_reason TEXT,
     KEY idx_auth_user (user_id),
-    CONSTRAINT fk_auth_user FOREIGN KEY (user_id) REFERENCES user(user_id)
-    );
+    CONSTRAINT fk_auth_user FOREIGN KEY (user_id) REFERENCES users(user_id));

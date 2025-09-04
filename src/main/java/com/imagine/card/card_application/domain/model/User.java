@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-@Table(name = "user",   // H2 예약어 충돌 방지
+@Table(name = "users",
         indexes = {
                 @Index(name = "idx_user_phone", columnList = "phone"),
                 @Index(name = "idx_user_ci", columnList = "ci")

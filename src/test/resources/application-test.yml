@@ -1,11 +1,9 @@
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/card_db_test?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: card_user
-    password: card_pass
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
+    url: jdbc:placeholder   # <- 로컬 DB로 fallback 못 하게 가짜값
+    username: test
+    password: test
   jpa:
     hibernate:
       ddl-auto: none
@@ -15,5 +13,19 @@ spring:
         format_sql: true
         show_sql: true
   flyway:
-    enabled: false
+    enabled: true      #  Flyway 활성화
+    locations: classpath:db/migration
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.imagine.card.card_application.event"
+
+redis:
+  lock:
+    enabled: true
 

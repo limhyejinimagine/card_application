@@ -12,7 +12,8 @@ public interface CardTypeRepository extends JpaRepository<CardType,Long> {
 
     // 카드명 조회
     boolean existsByName(String name);
-    
-    
+
+    // 카드 활성화 여부 조회
+    boolean existsByIdAndIsActiveTrue(Long cardTypeId);
 
 }

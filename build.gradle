@@ -57,12 +57,23 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
+	// Testcontainers
+	testImplementation "org.testcontainers:junit-jupiter:1.20.3"
+	testImplementation "org.testcontainers:mysql:1.20.3"
+	testImplementation "org.testcontainers:kafka:1.20.3"
+	// Redis는 전용 모듈 없음 → GenericContainer 사용
+
 	// === Dev / Test ===
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+
+	// === flyway ====
+	implementation "org.flywaydb:flyway-core:11.7.2"
+	implementation "org.flywaydb:flyway-mysql:11.7.2"
 }
 
 tasks.named('test') {

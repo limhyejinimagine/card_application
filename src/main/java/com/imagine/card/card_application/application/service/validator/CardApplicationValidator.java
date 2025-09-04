@@ -33,10 +33,13 @@ public class CardApplicationValidator {
         // 3. 카드타입 조회
         CardType cardType = cardTypeRepository.findById(cardTypeId)
                 .orElseThrow(() -> new DomainException("존재하지 않는 카드 타입입니다."));
-        
+
+        boolean  isActive = cardTypeRepository.existsByIdAndIsActiveTrue(cardTypeId);
+        System.out.println("카드 활성화 여부 isActive="+isActive);
+
         // 4. 카드 활성화 여부 확인
-        if (applicationRepository.existsByUser_IdAndCardType_Id(userId, cardTypeId) ) {
-            throw new DomainException("이미 신청된 카드 타입입니다.");
+        if (!cardTypeRepository.existsByIdAndIsActiveTrue(cardTypeId) ) {
+            throw new DomainException("비활성화 된 카드 입니다.");
         }
         
         // 5. 검증 결과 묶어서 반환

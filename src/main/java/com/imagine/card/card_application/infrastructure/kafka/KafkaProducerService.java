@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 public class KafkaProducerService implements CardApplicationEventPublisher {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-
     // 유효성 실패
     @Override
     public void publishValidationFailed(ValidationFailedEvent event) {

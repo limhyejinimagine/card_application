@@ -34,4 +34,5 @@ public class ApplicationStatusHistory {
     void prePersist() {
         if (changedAt == null) changedAt = LocalDateTime.now();
     }
+
 }

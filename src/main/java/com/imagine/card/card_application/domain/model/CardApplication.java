@@ -32,6 +32,10 @@ public class CardApplication {
     @Column(length = 30, nullable = false)
     private ApplicationStatus status;
 
+    // 관리자용 Optimistic Lock > version 필드 추가
+    @Version
+    private Long version;
+
     @Column(name = "requested_at", nullable = false)
     private LocalDateTime requestedAt;
 
@@ -46,11 +50,13 @@ public class CardApplication {
 
     // ERD: CardApplication 1:N ApplicationStatusHistory
     @OneToMany(mappedBy = "application", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
+    @Builder.Default    // 항상 빈 리스트로 초기화된 상태를 보장하기 위함
     private List<ApplicationStatusHistory> histories = new ArrayList<>();
 
     // ERD: CardApplication 1:1 Card (양방향의 주인은 Card)
-    @OneToOne(mappedBy = "application", fetch = FetchType.LAZY, optional = true)
+    @OneToOne(mappedBy = "application", fetch = FetchType.LAZY,
+            optional = true     // 카드 발급 아직 안되었을 수도 있음
+    )
     private Card card;
 
     @PrePersist
@@ -59,5 +65,11 @@ public class CardApplication {
         if (status == null) status = ApplicationStatus.REQUESTED;
     }
 
-    public enum ApplicationStatus { REQUESTED, FAILED, APPROVED, ISSUED, REJECTED }
+    public enum ApplicationStatus {
+        REQUESTED, // 신청됨
+        FAILED,    // 유효성 실패
+        APPROVED,  // 승인됨
+        ISSUED,    // 카드 발급 완료
+        REJECTED   // 거절됨
+    }
 }

@@ -2,11 +2,13 @@ package com.imagine.card.card_application.presentation.controller;
 
 import com.imagine.card.card_application.application.dto.CardTypeResponse;
 import com.imagine.card.card_application.application.dto.CreateCardTypeRequest;
+import com.imagine.card.card_application.application.dto.UpdateApplicationStatusRequest;
 import com.imagine.card.card_application.application.dto.UpdateCardTypeRequest;
 import com.imagine.card.card_application.application.service.CardTypeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.sql.Update;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,6 +59,17 @@ public class CardTypeController {
 
         cardTypeService.updateCardType(id, req);
         return ResponseEntity.ok().build(); // 본문 없이 200 반환
+    }
+
+
+    /**
+     * 카드 신청 상태 변경 (승인/거절 등)
+     */
+    @PatchMapping("/status")
+    public ResponseEntity<Void> updateCardTypeStatus(
+            @Valid @RequestBody UpdateApplicationStatusRequest req) {
+        cardTypeService.ChangeApplicationStatus(req);
+        return ResponseEntity.ok().build(); // test
     }
 
 }

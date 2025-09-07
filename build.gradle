@@ -45,8 +45,10 @@ dependencies {
 	implementation 'org.springframework.kafka:spring-kafka'
 
 	// === DB Drivers ===
+	// 개발/운영: MySQL
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	runtimeOnly 'com.h2database:h2'   // <- H2 추가
+	// 테스트 전용: H2
+	testImplementation 'com.h2database:h2'
 
 	// === Lombok ===
 	// main 코드용

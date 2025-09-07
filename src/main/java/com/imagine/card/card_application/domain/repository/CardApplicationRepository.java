@@ -11,4 +11,8 @@ public interface CardApplicationRepository extends JpaRepository<CardApplication
 
     // 연관관계 필드이므로 _ 로 id 접근
     boolean existsByUser_IdAndCardType_Id(Long userId, Long cardTypeId);
+
+    // 카드신청 건 조회
+    Optional<CardApplication> findById(Long id);
+
 }

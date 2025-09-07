@@ -1,7 +1,9 @@
 package com.imagine.card.card_application.application.service.validator;
 
 import com.imagine.card.card_application.application.service.exception.DomainException;
+import com.imagine.card.card_application.domain.model.CardApplication;
 import com.imagine.card.card_application.domain.model.CardType;
+import com.imagine.card.card_application.domain.repository.CardApplicationRepository;
 import com.imagine.card.card_application.domain.repository.CardTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class CardTypeValidator {
 
     private final CardTypeRepository cardTypeRepository;
+    private final CardApplicationRepository cardApplicationRepository;
 
     /**
      * 카드명 중복 체크 (등록)
@@ -44,4 +47,20 @@ public class CardTypeValidator {
                 .orElseThrow(() -> new IllegalArgumentException("카드 타입 없음"));
     }
 
+    /**
+     * 카드 신청 건 조회
+     * */
+    public CardApplication checkCardApplication(Long applicationId) {
+        return cardApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 카드 신청 건 없음"));
+    }
+
+    /**
+     * 카드 활성화 여부 확인
+     * */
+    public void checkIsActive(Long cardTypeId) {
+        if (!cardTypeRepository.existsByIdAndIsActiveTrue(cardTypeId) ) {
+            throw new DomainException("비활성화 된 카드 입니다.");
+        }
+    }
 }

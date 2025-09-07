@@ -1,6 +1,5 @@
 package com.imagine.card.card_application.application.dto;
 
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record UpdateCardTypeRequest(

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class KafkaProducerService implements CardApplicationEventPublisher {
+
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     // 유효성 실패

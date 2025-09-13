@@ -69,7 +69,7 @@ public class CardTypeController {
     public ResponseEntity<Void> updateCardTypeStatus(
             @Valid @RequestBody UpdateApplicationStatusRequest req) {
         cardTypeService.ChangeApplicationStatus(req);
-        return ResponseEntity.ok().build(); // test
+        return ResponseEntity.noContent().build();
     }
 
 }

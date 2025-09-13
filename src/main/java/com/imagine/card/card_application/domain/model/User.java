@@ -26,6 +26,9 @@ public class User {
     @Column(unique = true)
     private String phone;
 
+    @Column(unique = true)
+    private String email;
+
     @Column(name = "birth_date")
     private LocalDate birthDate;
 

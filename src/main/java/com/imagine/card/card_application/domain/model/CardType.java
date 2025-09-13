@@ -25,7 +25,7 @@ public class CardType {
     private String name;
     private String description;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active", columnDefinition = "TINYINT(1)")
     private Boolean isActive;
 
     @Column(name = "created_at")

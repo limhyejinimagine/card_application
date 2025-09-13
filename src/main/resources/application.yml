@@ -1,59 +1,37 @@
 spring:
   profiles:
-    active: local
-  config:
-    activate:
-      on-profile: local
-
-  datasource:
-    master:
-      jdbc-url: jdbc:mysql://localhost:3306/card_db?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
-      username: card_user
-      password: card_pass
-      driver-class-name: com.mysql.cj.jdbc.Driver
-    slave:
-      jdbc-url: jdbc:mysql://localhost:3307/card_db?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
-      username: card_user
-      password: card_pass
-      driver-class-name: com.mysql.cj.jdbc.Driver
-
+    active: local   # 기본 실행 프로파일
   jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
+    open-in-view: false
+    show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-        format_sql: true
-
-  messages:
-    basename: ValidationMessages
-    encoding: UTF-8
-
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
-
-  data:
-    redis:
-      host: localhost
-      port: 6379
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    consumer:
-      group-id: card-service-group
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "com.imagine.card.card_application.event"
-
+        show_sql: false
+        format_sql: false
   jackson:
     time-zone: Asia/Seoul
+  kafka:
+    bootstrap-servers: localhost:9092
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: limhyejinimagine@gmail.com
+    password: gvjg ppgz fymo bgvw
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 logging:
   level:
-    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: DEBUG
+    org.hibernate.SQL: OFF          # SQL 로그 완전히 끄기
+    org.hibernate.type: OFF         # 파라미터 바인딩 로그도 끄기
+    org.hibernate.engine.jdbc.spi.SqlStatementLogger: OFF
+    org.hibernate.orm.jdbc.bind: OFF   # (Hibernate 6.x 일 경우)
+    com.imagine.card.card_application: INFO
+    c.i.c.c.config.RoutingDataSource: WARN
+
+
+

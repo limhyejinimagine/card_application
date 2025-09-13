@@ -76,6 +76,20 @@ dependencies {
 	// === flyway ====
 	implementation "org.flywaydb:flyway-core:11.7.2"
 	implementation "org.flywaydb:flyway-mysql:11.7.2"
+
+	// === 메일 전송 ===
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	// === 카카오톡 알림톡 관련 ===
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation group: 'org.json', name: 'json', version: '20210307'
+
+	// thymleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+
+
+
 }
 
 tasks.named('test') {

@@ -1,14 +1,18 @@
 package com.imagine.card.card_application.application.service;
 
 import com.imagine.card.card_application.application.dto.*;
+import com.imagine.card.card_application.application.service.common.JsonConverter;
 import com.imagine.card.card_application.application.service.exception.DomainException;
 import com.imagine.card.card_application.application.service.validator.CardTypeValidator;
 import com.imagine.card.card_application.domain.model.ApplicationStatusHistory;
 import com.imagine.card.card_application.domain.model.CardApplication;
 import com.imagine.card.card_application.domain.model.CardType;
+import com.imagine.card.card_application.domain.model.OutboxStatus;
 import com.imagine.card.card_application.domain.repository.ApplicationStatusHistoryRepository;
-import com.imagine.card.card_application.domain.repository.CardApplicationRepository;
 import com.imagine.card.card_application.domain.repository.CardTypeRepository;
+import com.imagine.card.card_application.domain.repository.OutboxRepository;
+import com.imagine.card.card_application.event.CardApplicationStatusChangedEvent;
+import com.imagine.card.card_application.domain.model.OutboxEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +23,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 /* 카드 상품관리 -- 관리자 전용 서비스 */
 @Slf4j
 @Service
@@ -28,6 +33,8 @@ public class CardTypeService {
     private final CardTypeValidator validator;
     private final CardTypeRepository cardTypeRepository;
     private final ApplicationStatusHistoryRepository historyRepository;
+    private final OutboxRepository outboxRepository;
+    private final JsonConverter jsonConverter;
 
     /**
      * 카드 상품 등록
@@ -110,53 +117,33 @@ public class CardTypeService {
 
     /**
      * 카드 신청 상태 변경 (승인/거절 등)
-     *
-     * [관리자 승인/거절 요청]
-     *        ↓
-     * 1. 신청 건 조회 (@Version 포함)
-     *        ↓
-     * 2. 카드 상품 활성화 여부 확인
-     *        ↓
-     * 3. 상태 전이 규칙 검증
-     *        ↓
-     * 4. 상태 변경 (승인/거절 + 처리자 기록)
-     *        ↓
-     * 5. 상태 이력 저장
-     *        ↓
-     * 6. 이벤트 발행 (Kafka)
-     *        ↓
-     * 7. 커밋 시 Optimistic Lock 충돌 여부 확인
-     *        ↓
-     *    성공 → 정상 반영
-     *    실패 → "이미 처리된 신청 건" 에러
      * */
     @Transactional
-    public UpdateApplicationStatusResponse ChangeApplicationStatus(@Valid UpdateApplicationStatusRequest req) {
+    public void ChangeApplicationStatus(@Valid UpdateApplicationStatusRequest req) {
         System.out.println("######ChangeApplicationStatus CALL ############");
 
         // 1. 신청 건 조회 : 엔티티 조회 > ***영속성 컨텍스트에 엔티티 올라감
         CardApplication ca = validator.checkCardApplication(req.getApplicationId());
-        System.out.println("ca= "+ ca);
-        System.out.println("ca.getCardType()= "+ ca.getCardType().getName());
-        System.out.println("ca.getCardType().getId()= "+ ca.getCardType().getId());
-        System.out.println("ca.getUser().getId()= "+ ca.getUser().getId());
 
         // 2. 해당 카드 활성화 여부 체크
         validator.checkIsActive(ca.getCardType().getId());
 
         // 3. 상태 전이 규칙 검증 : APPROVED(REJECTED) → 다시 REJECTED(APPROVED) 불가
-        if (ca.getStatus() == CardApplication.ApplicationStatus.APPROVED
-        && req.getStatus() == CardApplication.ApplicationStatus.REJECTED) {
+        CardApplication.ApplicationStatus reqStatus     = req.getStatus();
+        CardApplication.ApplicationStatus applyStatus   = ca.getStatus();
+
+        if (applyStatus == CardApplication.ApplicationStatus.APPROVED
+                && reqStatus == CardApplication.ApplicationStatus.REJECTED) {
             throw new DomainException("승인된 신청 건은 거절할 수 없습니다.");
         };
 
-        if (ca.getStatus() == CardApplication.ApplicationStatus.REJECTED
-                && req.getStatus() == CardApplication.ApplicationStatus.APPROVED) {
+        if (applyStatus == CardApplication.ApplicationStatus.REJECTED
+                && reqStatus == CardApplication.ApplicationStatus.APPROVED) {
             throw new DomainException("거절된 신청 건은 승인할 수 없습니다.");
         };
 
         // 4. 상태 변경
-        ca.setStatus(req.getStatus());      // Dirty Checking
+        ca.setStatus(reqStatus);                // Dirty Checking
         ca.setRejectionReason(req.getMessage());
 
         // 5. 상태변경 이력 저장 : DB 에 없는 새로운 행이므로 영속상태가 아니기 때문에 엔티티생성
@@ -168,12 +155,18 @@ public class CardTypeService {
                 .build();
         historyRepository.save(history);    // 반드시 save() 해야 JPA가 관리
 
-        // 4 또는 5 하나라도 실패시 롤백 > 어떻게?
+        // 6. Kafka 발행을 위한 Outbox 에 이벤트 저장 (status:NEW)
+        OutboxEvent event = OutboxEvent.builder()
+                .aggregateId(ca.getId())
+                .aggregateType("CardType")
+                .type("card.status.changed.admin")
+                .payload(jsonConverter.toJson(new CardApplicationStatusChangedEvent(ca)))
+                .status(OutboxStatus.NEW)
+                .build();
+        outboxRepository.save(event);
 
+        // 7. 커밋 시 Optimistic Lock 충돌 여부 확인 - 성공 → 정상 반영 |  실패 → "이미 처리된 신청 건" 에러(GlobalException)
 
-        return null;
     }
-
-
 
 }

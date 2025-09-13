@@ -29,4 +29,11 @@ public class Card {
 
     @Column(name = "expiry_date", nullable = false)
     private LocalDateTime expiryDate;
+
+    public Card(CardApplication application, String dummyCardNumber, LocalDateTime issuedDate) {
+        this.application = application;
+        this.cardNumber = dummyCardNumber;
+        this.issuedDate = issuedDate;
+        this.expiryDate = issuedDate.plusYears(5);
+    }
 }

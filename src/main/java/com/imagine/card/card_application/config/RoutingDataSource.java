@@ -19,7 +19,7 @@ public class RoutingDataSource extends AbstractRoutingDataSource {
             key = "master";
         }
 
-        log.info("RoutingDataSource lookup: txActive={}, readOnly={}, key={}", txActive, readOnly, key);
+        log.debug("RoutingDataSource lookup: txActive={}, readOnly={}, key={}", txActive, readOnly, key);
         return key;
     }
 

@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class UpdateApplicationStatusRequest {
     private Long applicationId; // 변경할 신청 ID
     private CardApplication.ApplicationStatus status;      // APPROVED / REJECTED

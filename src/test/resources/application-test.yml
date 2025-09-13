@@ -1,31 +1,16 @@
-
 spring:
   datasource:
-    url: jdbc:placeholder   # <- 로컬 DB로 fallback 못 하게 가짜값
-    username: test
-    password: test
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
   jpa:
     hibernate:
-      ddl-auto: none
-    open-in-view: false
+      ddl-auto: update
     properties:
       hibernate:
-        format_sql: true
-        show_sql: true
-  flyway:
-    enabled: true      #  Flyway 활성화
-    locations: classpath:db/migration
-  kafka:
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "com.imagine.card.card_application.event"
-
-redis:
-  lock:
-    enabled: true
-
+        dialect: org.hibernate.dialect.MySQL8Dialect
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
